@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video Downloader</title>
+    </head>
+    <body>
+        <h1>Video Downloader</h1>
+        <form id="downloadForm">
+            <label for="url">URL Girin:</label>
+            <input type="text" id="url" name="url" required>
+            <button type="submit">İndir</button>
+        </form>
+        <script>
+            document.getElementById('downloadForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const url = document.getElementById('url').value;
+
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({url})
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'downloaded_video.mp4'; // İndirilen dosyanın adı
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert('Video indirilemedi. Lütfen URL\'yi kontrol edin.');
+                }
+            });
+        </script>
+    </body>
+</html>
